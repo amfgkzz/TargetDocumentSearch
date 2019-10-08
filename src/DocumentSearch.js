@@ -55,7 +55,16 @@ const DocumentSearch = module.exports = function () {
         },
 
         regularExpressionSearch: function () {
-            console.log("reg exp");
+            const t0 = performance.now();
+            const files = fs.readdirSync(path = this.path);
+            files.forEach((file) => {
+                let match = fs.readFileSync(`${path}/${file}`, 'utf8').match(/warp/gi);
+                this.results[file] = match ? match.length : 0;
+            });
+            console.log(this.results);
+            const t1 = performance.now();
+            console.log(`Elapsed time: ${t1 - t0} ms`);
+            rl.close();
         },
 
         indexedSearch: function () {
