@@ -6,7 +6,17 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-function searchAllDocuments() {
+const DocumentSearch = module.exports = function () {
+    return {
+        query: null,
+        results: null,
+        processDocuments: function (path) {
+            
+        }
+    }
+}
+
+function searchDocuments() {
     fs.readdir('/Users/kouaxiong/TargetChallenge/TargetSeachEngine/documents', (error, files) => {
         if (error) {
             console.log(error);
@@ -14,13 +24,20 @@ function searchAllDocuments() {
         }
         files.forEach((file) => {
             console.log(file);
+            fs.readFile(`/Users/kouaxiong/TargetChallenge/TargetSeachEngine/documents/${file}`, 'utf8', (error, data) => {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+                console.log(data);
+            });
         });
     });
 }
 
 function stringMatchSearch(query) {
     console.log(query);
-    searchAllDocuments();
+    searchDocuments();
     rl.close();
 }
 
@@ -42,7 +59,6 @@ rl.question('Enter the search term: ', (answer) => {
                     console.log("STRING MATCH");
                     stringMatchSearch(answer);
                     break;
-
                 case '2':
                     console.log("REG EXP");
                     regularExpressionSearch(answer);
