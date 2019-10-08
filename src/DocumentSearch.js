@@ -48,9 +48,9 @@ const DocumentSearch = module.exports = function () {
                     }
                 }
             });
-            console.log(this.results);
+            this.getResults();
             const t1 = performance.now();
-            console.log(`Elapsed time: ${t1 - t0} ms`);
+            console.log(`\nElapsed time: ${t1 - t0} ms\n`);
         },
 
         regularExpressionSearch: function () {
@@ -66,9 +66,9 @@ const DocumentSearch = module.exports = function () {
                 });
                 this.results[file] = match ? match.length : 0;
             });
-            console.log(this.results);
+            this.getResults();
             const t1 = performance.now();
-            console.log(`Elapsed time: ${t1 - t0} ms`);
+            console.log(`\nElapsed time: ${t1 - t0} ms\n`);
         },
 
         indexedSearch: function () {
@@ -80,17 +80,29 @@ const DocumentSearch = module.exports = function () {
                 });
                 this.results[file] = wordsArray ? wordsArray.length : 0;
             });
-            console.log(this.results);
+            this.getResults();
             const t1 = performance.now();
-            console.log(`Elapsed time: ${t1 - t0} ms`);
+            console.log(`\nElapsed time: ${t1 - t0} ms \n`);
+        },
+
+        getResults: function () {
+            if (this.results !== null) {
+                for (const key in this.results) {
+                    if (this.results.hasOwnProperty(key)) {
+                        console.log(`\nResult: ${key} - ${this.results[key]} matches`);
+                    }
+                }
+            } else {
+                console.log('No results, yet.');
+            }
         }
     }
 }
 
 const request = new DocumentSearch();
-rl.question('Enter the search term: ', (query) => {
+rl.question('\nEnter the search term: ', (query) => {
     if (!!query) {
-        rl.question('Search Method: 1) String Match  2) Regular Expression  3) Indexed - ', (method) => {
+        rl.question('\nEnter a number to choose the preferred Search Method: \n1) String Match  2) Regular Expression  3) Indexed - ', (method) => {
             request.query = query;
             request.method = method;
             request.processDocuments();
