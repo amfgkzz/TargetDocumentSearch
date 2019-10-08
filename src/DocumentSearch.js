@@ -62,6 +62,9 @@ const DocumentSearch = module.exports = function () {
             console.log(`\nElapsed time: ${t1 - t0} ms\n`);
         },
 
+        // Tried to implement an indexed search to the best of my ability, 
+        // still not too sure on how to best go about it and best practices
+        // please let me know what I can do better on.
         indexedSearch: function () {
             const t0 = performance.now();
             const files = fs.readdirSync(path = this.path);
