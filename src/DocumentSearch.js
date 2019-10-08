@@ -2,11 +2,6 @@ const fs = require("fs");
 const readline = require("readline");
 const { performance } = require('perf_hooks');
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
 const DocumentSearch = module.exports = function () {
     return {
         method: null,
@@ -18,19 +13,15 @@ const DocumentSearch = module.exports = function () {
             switch (this.method) {
                 case '1':
                     this.stringMatchSearch();
-                    rl.close();
                     break;
                 case '2':
                     this.regularExpressionSearch();
-                    rl.close();
                     break;
                 case '3':
                     this.indexedSearch();
-                    rl.close();
                     break;
                 default:
                     console.log('Invalid method.');
-                    rl.close();
                     break;
             }
         },
@@ -99,17 +90,24 @@ const DocumentSearch = module.exports = function () {
     }
 }
 
-rl.question('\nEnter the search term: ', (query) => {
-    const request = new DocumentSearch();
-    console.log(request);
-    if (!!query) {
-        rl.question('\nEnter a number to choose the preferred Search Method: \n1) String Match  2) Regular Expression  3) Indexed - ', (method) => {
-            request.query = query;
-            request.method = method;
-            request.processDocuments();
-        });
-    } else {
-        console.log('Invalid search query.');
-        rl.close();
-    }
-});
+if (require.main === module) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    rl.question('\nEnter the search term: ', (query) => {
+        const request = new DocumentSearch();
+        if (!!query) {
+            rl.question('\nEnter a number to choose the preferred Search Method: \n1) String Match  2) Regular Expression  3) Indexed - ', (method) => {
+                request.query = query;
+                request.method = method;
+                request.processDocuments();
+                rl.close();
+            });
+        } else {
+            console.log('Invalid search query.');
+            rl.close();
+        }
+    });
+}
+
