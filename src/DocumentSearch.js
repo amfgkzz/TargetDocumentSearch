@@ -51,7 +51,6 @@ const DocumentSearch = module.exports = function () {
             console.log(this.results);
             const t1 = performance.now();
             console.log(`Elapsed time: ${t1 - t0} ms`);
-            rl.close();
         },
 
         regularExpressionSearch: function () {
@@ -60,19 +59,31 @@ const DocumentSearch = module.exports = function () {
             const escapeRegExp = function (string) {
                 return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             }
-            const regExpQuery = new RegExp(escapeRegExp(this.query), 'gim');
+            const regExpQuery = new RegExp(escapeRegExp(this.query), 'gi');
             files.forEach((file) => {
-                let match = fs.readFileSync(`${path}/${file}`, 'utf8').match(regExpQuery);
+                let match = fs.readFileSync(`${path}/${file}`, 'utf8').split(' ').filter((word) => {
+                    return word.length == this.query.length && word.match(regExpQuery);
+                });
                 this.results[file] = match ? match.length : 0;
             });
             console.log(this.results);
             const t1 = performance.now();
             console.log(`Elapsed time: ${t1 - t0} ms`);
-            rl.close();
         },
 
         indexedSearch: function () {
+            const t0 = performance.now();
 
+            const files = fs.readdirSync(path = this.path);
+            files.forEach((file) => {
+                let wordsArray = fs.readFileSync(`${path}/${file}`, 'utf8').split(' ').sort().filter((word) => {
+                    return word.length == this.query.length && word.toLowerCase() == this.query.toLowerCase();
+                });
+                this.results[file] = wordsArray ? wordsArray.length : 0;
+            });
+            console.log(this.results);
+            const t1 = performance.now();
+            console.log(`Elapsed time: ${t1 - t0} ms`);
         }
     }
 }
