@@ -1,6 +1,6 @@
 const fs = require("fs");
 const readline = require("readline");
-const { PerformanceObserver, performance } = require('perf_hooks');
+const { performance } = require('perf_hooks');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -57,8 +57,12 @@ const DocumentSearch = module.exports = function () {
         regularExpressionSearch: function () {
             const t0 = performance.now();
             const files = fs.readdirSync(path = this.path);
+            const escapeRegExp = function (string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+            const regExpQuery = new RegExp(escapeRegExp(this.query), 'gim');
             files.forEach((file) => {
-                let match = fs.readFileSync(`${path}/${file}`, 'utf8').match(/warp/gi);
+                let match = fs.readFileSync(`${path}/${file}`, 'utf8').match(regExpQuery);
                 this.results[file] = match ? match.length : 0;
             });
             console.log(this.results);
@@ -68,7 +72,7 @@ const DocumentSearch = module.exports = function () {
         },
 
         indexedSearch: function () {
-            console.log("index search");
+
         }
     }
 }
