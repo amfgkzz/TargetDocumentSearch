@@ -1,5 +1,6 @@
 const fs = require("fs");
 const readline = require("readline");
+const { PerformanceObserver, performance } = require('perf_hooks');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -11,7 +12,7 @@ const DocumentSearch = module.exports = function () {
         method: null,
         path: `${__dirname}/documents`,
         query: null,
-        results: null,
+        results: {},
 
         processDocuments: function () {
             switch (this.method) {
@@ -26,7 +27,7 @@ const DocumentSearch = module.exports = function () {
                 case '3':
                     this.indexedSearch();
                     rl.close();
-                    break;            
+                    break;
                 default:
                     console.log('Invalid method.');
                     rl.close();
@@ -35,26 +36,22 @@ const DocumentSearch = module.exports = function () {
         },
 
         stringMatchSearch: function () {
-            console.log("string match");
-            fs.readdir(path = this.path, (error, files) => {
-                if (error) {
-                    console.log(error);
-                    return;
+            const t0 = performance.now();
+            const files = fs.readdirSync(path = this.path);
+            files.forEach((file) => {
+                this.results[file] = 0;
+                let wordsArray = fs.readFileSync(`${path}/${file}`, 'utf8').split(' ');
+                for (let i = 0; i < wordsArray.length; i++) {
+                    const word = wordsArray[i];
+                    if (word.toLowerCase() == this.query.toLowerCase()) {
+                        this.results[file]++;
+                    }
                 }
-                files.forEach((file) => {
-                    // console.log(file);
-                    fs.readFile(`${path}/${file}`, 'utf8', (error, data) => {
-                        console.log(path);
-                        if (error) {
-                            console.log(error);
-                            return;
-                        }
-                        let words = data.split(' ');
-                        console.log(words);
-                    });
-                    rl.close();
-                });
             });
+            console.log(this.results);
+            const t1 = performance.now();
+            console.log(`Elapsed time: ${t1 - t0} ms`);
+            rl.close();
         },
 
         regularExpressionSearch: function () {
@@ -67,12 +64,12 @@ const DocumentSearch = module.exports = function () {
     }
 }
 
+const request = new DocumentSearch();
 rl.question('Enter the search term: ', (query) => {
-    const request = new DocumentSearch();
     if (!!query) {
         rl.question('Search Method: 1) String Match  2) Regular Expression  3) Indexed - ', (method) => {
-            request.method = method;
             request.query = query;
+            request.method = method;
             request.processDocuments();
         });
     } else {
