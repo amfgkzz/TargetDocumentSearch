@@ -99,8 +99,9 @@ const DocumentSearch = module.exports = function () {
     }
 }
 
-const request = new DocumentSearch();
 rl.question('\nEnter the search term: ', (query) => {
+    const request = new DocumentSearch();
+    console.log(request);
     if (!!query) {
         rl.question('\nEnter a number to choose the preferred Search Method: \n1) String Match  2) Regular Expression  3) Indexed - ', (method) => {
             request.query = query;
