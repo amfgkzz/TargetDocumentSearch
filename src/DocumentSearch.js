@@ -73,7 +73,6 @@ const DocumentSearch = module.exports = function () {
 
         indexedSearch: function () {
             const t0 = performance.now();
-
             const files = fs.readdirSync(path = this.path);
             files.forEach((file) => {
                 let wordsArray = fs.readFileSync(`${path}/${file}`, 'utf8').split(' ').sort().filter((word) => {
